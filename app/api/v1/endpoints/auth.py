@@ -10,13 +10,14 @@ import uuid
 from datetime import datetime, timedelta
 from typing import Any
 
-from fastapi import APIRouter, Body, Depends, HTTPException, status
+from fastapi import APIRouter, Body, Depends, HTTPException, BackgroundTasks, status
 from fastapi.security import OAuth2PasswordRequestForm
 from jose import JWTError
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.deps import DBSession, CurrentActiveUser
+from app.services.email import EmailService
 from app.core.security import (
     create_access_token,
     create_refresh_token,
@@ -141,6 +142,7 @@ async def refresh_token(
 @router.post("/register", response_model=UserSchema, status_code=status.HTTP_201_CREATED)
 async def register_user(
     db: DBSession,
+    background_tasks: BackgroundTasks,
     user_in: UserCreate = Body(...),
 ) -> Any:
     """
@@ -148,6 +150,7 @@ async def register_user(
     
     Args:
         db: Database session
+        background_tasks: Background tasks for sending email
         user_in: User creation data
         
     Returns:
@@ -184,7 +187,14 @@ async def register_user(
     await db.commit()
     await db.refresh(user)
     
-    # TODO: Send verification email
+    # Send verification email
+    email_service = EmailService()
+    await email_service.send_verification_email(
+        email_to=user.email,
+        token=verification_token,
+        username=user.full_name or user.email,
+        background_tasks=background_tasks,
+    )
     
     return user
 
@@ -192,6 +202,7 @@ async def register_user(
 @router.post("/password-reset-request", status_code=status.HTTP_202_ACCEPTED)
 async def request_password_reset(
     db: DBSession,
+    background_tasks: BackgroundTasks,
     reset_request: PasswordResetRequest = Body(...),
 ) -> Any:
     """
@@ -199,6 +210,7 @@ async def request_password_reset(
     
     Args:
         db: Database session
+        background_tasks: Background tasks for sending email
         reset_request: Password reset request with email
         
     Returns:
@@ -223,7 +235,14 @@ async def request_password_reset(
     db.add(user)
     await db.commit()
     
-    # TODO: Send password reset email
+    # Send password reset email
+    email_service = EmailService()
+    await email_service.send_password_reset_email(
+        email_to=user.email,
+        token=reset_token,
+        username=user.full_name or user.email,
+        background_tasks=background_tasks,
+    )
     
     return {"message": "If the email exists, a password reset link has been sent"}
 
