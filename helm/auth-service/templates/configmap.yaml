@@ -1,0 +1,33 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Values.configMap.name }}
+  labels:
+    {{- include "auth-service.labels" . | nindent 4 }}
+data:
+  # API settings
+  API_V1_STR: {{ .Values.application.apiV1Str | quote }}
+  PROJECT_NAME: {{ .Values.application.projectName | quote }}
+  
+  # Database settings (non-sensitive)
+  POSTGRES_SERVER: {{ .Values.application.database.server | quote }}
+  POSTGRES_PORT: {{ .Values.application.database.port | quote }}
+  POSTGRES_DB: {{ .Values.application.database.name | quote }}
+  
+  # Token settings
+  ACCESS_TOKEN_EXPIRE_MINUTES: {{ .Values.application.token.accessTokenExpireMinutes | quote }}
+  REFRESH_TOKEN_EXPIRE_DAYS: {{ .Values.application.token.refreshTokenExpireDays | quote }}
+  ALGORITHM: {{ .Values.application.token.algorithm | quote }}
+  
+  # CORS settings
+  BACKEND_CORS_ORIGINS: {{ .Values.application.corsOrigins | quote }}
+  
+  # Email settings (non-sensitive)
+  SMTP_TLS: {{ .Values.application.email.smtpTls | quote }}
+  SMTP_PORT: {{ .Values.application.email.smtpPort | quote }}
+  SMTP_HOST: {{ .Values.application.email.smtpHost | quote }}
+  EMAILS_FROM_EMAIL: {{ .Values.application.email.fromEmail | quote }}
+  EMAILS_FROM_NAME: {{ .Values.application.email.fromName | quote }}
+  
+  # Rate limiting
+  RATE_LIMIT_PER_MINUTE: {{ .Values.application.rateLimitPerMinute | quote }}
