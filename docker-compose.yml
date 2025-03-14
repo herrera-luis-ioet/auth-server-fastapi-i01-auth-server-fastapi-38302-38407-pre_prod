@@ -1,0 +1,64 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: auth-server-fastapi:latest
+    container_name: auth-server-fastapi
+    restart: always
+    ports:
+      - "8000:8000"
+    environment:
+      - POSTGRES_SERVER=db
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=auth_db
+      - POSTGRES_PORT=5432
+      - SECRET_KEY=${SECRET_KEY:-supersecretkey}
+      - ACCESS_TOKEN_EXPIRE_MINUTES=30
+      - REFRESH_TOKEN_EXPIRE_DAYS=7
+      - BACKEND_CORS_ORIGINS=${BACKEND_CORS_ORIGINS:-["http://localhost:3000","http://localhost:8000"]}
+    volumes:
+      - ./:/app
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - auth-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+
+  db:
+    image: postgres:15-alpine
+    container_name: auth-postgres
+    restart: always
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=auth_db
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - auth-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+networks:
+  auth-network:
+    driver: bridge
+
+volumes:
+  postgres_data:

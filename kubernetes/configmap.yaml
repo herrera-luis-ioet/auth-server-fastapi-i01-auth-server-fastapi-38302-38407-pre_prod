@@ -1,0 +1,33 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: auth-server-config
+  labels:
+    app: auth-server
+data:
+  # API settings
+  API_V1_STR: "/api/v1"
+  PROJECT_NAME: "Authentication Management Component"
+  
+  # Database settings (non-sensitive)
+  POSTGRES_SERVER: "postgres-service"
+  POSTGRES_PORT: "5432"
+  POSTGRES_DB: "auth_db"
+  
+  # Token settings
+  ACCESS_TOKEN_EXPIRE_MINUTES: "30"
+  REFRESH_TOKEN_EXPIRE_DAYS: "7"
+  ALGORITHM: "HS256"
+  
+  # CORS settings
+  BACKEND_CORS_ORIGINS: '["https://app.example.com", "https://api.example.com"]'
+  
+  # Email settings (non-sensitive)
+  SMTP_TLS: "true"
+  SMTP_PORT: "587"
+  SMTP_HOST: "smtp.example.com"
+  EMAILS_FROM_EMAIL: "noreply@example.com"
+  EMAILS_FROM_NAME: "Authentication Service"
+  
+  # Rate limiting
+  RATE_LIMIT_PER_MINUTE: "60"
