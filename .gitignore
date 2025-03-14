@@ -1,7 +1,11 @@
-
-# Python ignorables
+# Project specific
 .knowledge/
 logs/
+.env
+.env.*
+!.env.example
+
+# Python ignorables
 __pycache__/
 *.py[cod]
 *$py.class
@@ -27,29 +31,77 @@ MANIFEST
 *.spec
 pip-log.txt
 pip-delete-this-directory.txt
+
+# Unit test / coverage reports
 htmlcov/
 .tox/
+.nox/
 .coverage
 .coverage.*
 .cache
 nosetests.xml
 coverage.xml
 *.cover
+*.py,cover
 .hypothesis/
 .pytest_cache/
+cover/
+
+# Environments
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# mypy
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# Pyre type checker
+.pyre/
+
+# pytype static type analyzer
+.pytype/
+
+# Cython debug symbols
+cython_debug/
+
+# Poetry
+poetry.lock
+
+# VS Code
+.vscode/
+*.code-workspace
+.history/
+
+# PyCharm
+.idea/
+*.iml
+*.iws
+*.ipr
+*.iws
+.idea_modules/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# Docker
+.docker/
 
 # Ignore all directories containing pyvenv.cfg
 **/pyvenv.cfg
 **/*/pyvenv.cfg
 
-# Node.js ignorables
+# Node.js ignorables (if using frontend)
 node_modules/
 npm-debug.log
 yarn-error.log
+yarn-debug.log
 .pnp/
 .pnp.js
-.env
-.env.test
 .cache/
 .next/
 .nuxt/
@@ -57,3 +109,7 @@ yarn-error.log
 .serverless/
 .fusebox/
 .dynamodb/
+
+# Logs
+logs
+*.log
