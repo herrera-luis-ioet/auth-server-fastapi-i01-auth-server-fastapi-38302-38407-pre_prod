@@ -160,9 +160,9 @@ async def update_user_me(
 
 @router.get("/{user_id}", response_model=UserSchema)
 async def read_user_by_id(
+    user_id: uuid.UUID,
     db: DBSession,
     current_user: CurrentSuperUser,
-    user_id: uuid.UUID = Path(...),
 ) -> Any:
     """
     Get a specific user by id (superuser only).
@@ -189,9 +189,9 @@ async def read_user_by_id(
 
 @router.put("/{user_id}", response_model=UserSchema)
 async def update_user(
+    user_id: uuid.UUID,
     db: DBSession,
     current_user: CurrentSuperUser,
-    user_id: uuid.UUID = Path(...),
     user_in: UserUpdate = Body(...),
 ) -> Any:
     """
@@ -248,9 +248,9 @@ async def update_user(
 
 @router.delete("/{user_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_user(
+    user_id: uuid.UUID,
     db: DBSession,
     current_user: CurrentSuperUser,
-    user_id: uuid.UUID = Path(...),
 ) -> None:
     """
     Delete a user (superuser only).
