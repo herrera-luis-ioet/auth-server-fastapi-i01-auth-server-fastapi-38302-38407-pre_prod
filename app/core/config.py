@@ -67,7 +67,7 @@ class Settings(BaseSettings):
             password=values.data.get("POSTGRES_PASSWORD"),
             host=values.data.get("POSTGRES_SERVER"),
             port=int(values.data.get("POSTGRES_PORT", 5432)),
-            path=f"{values.data.get('POSTGRES_DB', '')}"
+            path=f"/{values.data.get('POSTGRES_DB', '')}"
         )
     
     # Email settings
