@@ -161,16 +161,16 @@ async def update_user_me(
 @router.get("/{user_id}", response_model=UserSchema)
 async def read_user_by_id(
     db: DBSession,
-    user_id: uuid.UUID = Path(...),
     current_user: CurrentSuperUser,
+    user_id: uuid.UUID = Path(...),
 ) -> Any:
     """
     Get a specific user by id (superuser only).
     
     Args:
         db: Database session
-        user_id: User ID
         current_user: Current authenticated superuser
+        user_id: User ID
         
     Returns:
         User: User data
@@ -190,18 +190,18 @@ async def read_user_by_id(
 @router.put("/{user_id}", response_model=UserSchema)
 async def update_user(
     db: DBSession,
+    current_user: CurrentSuperUser,
     user_id: uuid.UUID = Path(...),
     user_in: UserUpdate = Body(...),
-    current_user: CurrentSuperUser = Depends(),
 ) -> Any:
     """
     Update a user (superuser only).
     
     Args:
         db: Database session
+        current_user: Current authenticated superuser
         user_id: User ID
         user_in: User update data
-        current_user: Current authenticated superuser
         
     Returns:
         User: Updated user data
@@ -249,16 +249,16 @@ async def update_user(
 @router.delete("/{user_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_user(
     db: DBSession,
+    current_user: CurrentSuperUser,
     user_id: uuid.UUID = Path(...),
-    current_user: CurrentSuperUser = Depends(),
 ) -> None:
     """
     Delete a user (superuser only).
     
     Args:
         db: Database session
-        user_id: User ID
         current_user: Current authenticated superuser
+        user_id: User ID
     """
     result = await db.execute(select(User).where(User.id == user_id))
     user = result.scalars().first()
