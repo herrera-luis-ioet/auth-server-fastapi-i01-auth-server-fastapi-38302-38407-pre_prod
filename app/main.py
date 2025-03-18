@@ -24,8 +24,10 @@ if settings.BACKEND_CORS_ORIGINS:
         CORSMiddleware,
         allow_origins=[str(origin) for origin in settings.BACKEND_CORS_ORIGINS],
         allow_credentials=True,
-        allow_methods=["*"],
-        allow_headers=["*"],
+        allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
+        allow_headers=["Content-Type", "Authorization", "Accept", "X-Requested-With", "X-CSRF-Token"],
+        expose_headers=["Content-Length", "Content-Range"],
+        max_age=600,  # Cache preflight requests for 10 minutes
     )
 
 # Add session middleware
