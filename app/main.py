@@ -18,17 +18,17 @@ app = FastAPI(
     version="0.1.0",
 )
 
-# Set up CORS middleware
-if settings.BACKEND_CORS_ORIGINS:
-    app.add_middleware(
-        CORSMiddleware,
-        allow_origins=[str(origin) for origin in settings.BACKEND_CORS_ORIGINS],
-        allow_credentials=True,
-        allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
-        allow_headers=["Content-Type", "Authorization", "Accept", "X-Requested-With", "X-CSRF-Token"],
-        expose_headers=["Content-Length", "Content-Range"],
-        max_age=600,  # Cache preflight requests for 10 minutes
-    )
+# Set up CORS middleware with permissive settings for testing purposes
+# This configuration allows all origins, methods, and headers
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Allow all origins
+    allow_credentials=True,
+    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH", "HEAD"],
+    allow_headers=["*"],  # Allow all headers
+    expose_headers=["Content-Length", "Content-Range", "Content-Type"],
+    max_age=600,  # Cache preflight requests for 10 minutes
+)
 
 # Add session middleware
 app.add_middleware(SessionMiddleware, secret_key=settings.SECRET_KEY)
