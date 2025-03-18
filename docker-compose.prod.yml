@@ -5,23 +5,22 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    image: auth-server-fastapi:latest
+    image: auth-server-fastapi:prod
     container_name: auth-server-fastapi
     restart: always
     ports:
       - "8000:8000"
     environment:
       - POSTGRES_SERVER=db
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
-      - POSTGRES_DB=auth_db
+      - POSTGRES_USER=${POSTGRES_USER:-postgres}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-postgres}
+      - POSTGRES_DB=${POSTGRES_DB:-auth_db}
       - POSTGRES_PORT=5432
-      - SECRET_KEY=${SECRET_KEY:-supersecretkey}
-      - ACCESS_TOKEN_EXPIRE_MINUTES=30
-      - REFRESH_TOKEN_EXPIRE_DAYS=7
-      - BACKEND_CORS_ORIGINS=${BACKEND_CORS_ORIGINS:-["http://localhost:3000","http://localhost:8000","http://frontend:3000"]}
-    volumes:
-      - ./:/app
+      - SECRET_KEY=${SECRET_KEY}
+      - ACCESS_TOKEN_EXPIRE_MINUTES=${ACCESS_TOKEN_EXPIRE_MINUTES:-30}
+      - REFRESH_TOKEN_EXPIRE_DAYS=${REFRESH_TOKEN_EXPIRE_DAYS:-7}
+      - BACKEND_CORS_ORIGINS=${BACKEND_CORS_ORIGINS:-["https://yourdomain.com","http://localhost:8000"]}
+      - ENVIRONMENT=production
     depends_on:
       db:
         condition: service_healthy
@@ -33,25 +32,21 @@ services:
       timeout: 10s
       retries: 3
       start_period: 10s
-    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000
 
   frontend:
     build:
       context: ../auth-server-react-frontend
-      dockerfile: ${FRONTEND_DOCKERFILE:-Dockerfile.dev}
-    image: auth-server-frontend:${ENV:-dev}
+      dockerfile: Dockerfile
+    image: auth-server-frontend:prod
     container_name: auth-server-frontend
     restart: always
     ports:
-      - "3000:3000"
       - "80:80"
+      - "443:443"
     environment:
-      - NODE_ENV=${NODE_ENV:-development}
-      - REACT_APP_API_URL=${REACT_APP_API_URL:-http://localhost:8000/api/v1}
+      - NODE_ENV=production
       - API_URL=${API_URL:-http://backend:8000}
-    volumes:
-      - ../auth-server-react-frontend:/app
-      - /app/node_modules
     depends_on:
       - backend
     networks:
@@ -64,9 +59,9 @@ services:
     ports:
       - "5432:5432"
     environment:
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
-      - POSTGRES_DB=auth_db
+      - POSTGRES_USER=${POSTGRES_USER:-postgres}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-postgres}
+      - POSTGRES_DB=${POSTGRES_DB:-auth_db}
     volumes:
       - postgres_data:/var/lib/postgresql/data
     networks:
